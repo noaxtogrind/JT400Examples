@@ -1,5 +1,17 @@
+/*******************************************************************************
+ * Copyright (c) 2015 Remain Software.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    Remain Software - initial API and implementation
+ ******************************************************************************/
 package com.remainsoftware.jt400.examples.member;
 
+import java.awt.Frame;
+import java.awt.Window;
 import java.beans.PropertyVetoException;
 import java.io.IOException;
 
@@ -39,14 +51,25 @@ public class ListSource {
 			ErrorCompletingRequestException, IOException, InterruptedException, ObjectDoesNotExistException,
 			PropertyVetoException {
 
-		// ListSource listSource = new ListSource(new AS400("system", "user",
-		// "password"));
+		// ListSource listSource = new ListSource(new AS400("system", "user", "password"));
 		ListSource listSource = new ListSource(new AS400());
 		MemberDescription[] members = listSource.listMembers("QGPL", "QRPGSRC");
 		String memberAsString = listSource.getMemberAsString(members[0]);
 		System.out.println(memberAsString);
-		listSource.dispose();
+		dispose(listSource);
 
+	}
+
+	private static void dispose(ListSource listSource) {
+		listSource.dispose();
+		closeAWT();
+	}
+
+	private static void closeAWT() {
+		// gets rid of AWT after prompt of OS/400 system and password
+		for (Window window : Frame.getWindows()) {
+			window.dispose();
+		}
 	}
 
 	/**
@@ -84,7 +107,10 @@ public class ListSource {
 		System.out.println();
 	}
 
-	private void dispose() {
+	/**
+	 * Close all resources.
+	 */
+	public void dispose() {
 		fAS400.disconnectAllServices();
 	}
 
